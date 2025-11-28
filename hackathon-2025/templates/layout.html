@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoLoop Dashboard</title>
+
+  <link rel="stylesheet" href="/static/css/custom.css"> 
+</head>
+
+<body>
+  <script>
+    // Verificar sesión al cargar cualquier página (excepto páginas públicas)
+    const publicPages = ['/login', '/'];
+    if (localStorage.getItem('userLoggedIn') !== 'true' && !publicPages.includes(window.location.pathname)) {
+      window.location.href = '/login';
+    }
+
+    // Restringir accesos por rol: 'Intendencia' y 'Usuario' solo pueden entrar a /monitoreo
+    const role = (localStorage.getItem('userRole') || '').toLowerCase();
+    const path = window.location.pathname;
+    const adminPaths = ['/resumen','/historial','/usuarios','/monitoreo'];
+    const restrictedPaths = ['/monitoreo'];
+    if (role === 'intendencia' || role === 'usuario') {
+      // Redirigir a monitoreo si intenta entrar a otra vista
+      if (!restrictedPaths.includes(path)) {
+        window.location.replace('/monitoreo');
+      }
+    }
+  </script>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="notify">
+      <span class="bell">🔔</span>
+      <span class="badge">1</span>
+    </div>
+
+    <div class="user-tile">
+      <div class="user-icon">👤</div>
+      <div>
+        <strong id="userName">Admin</strong><br>
+        <small style="color:var(--text-light)" id="userRole">Usuario</small>
+      </div>
+      <button class="logout-btn" onclick="openLogoutModal()">⎋</button>
+    </div>
+    <script>
+      // Mostrar nombre del usuario logueado
+      const userName = localStorage.getItem('userName');
+      const userRole = localStorage.getItem('userRole');
+      if (userName) {
+        document.getElementById('userName').textContent = userName;
+      }
+      if (userRole) {
+        document.getElementById('userRole').textContent = userRole;
+      }
+
+      // Toasts
+      window.showToast = function(message, type = 'info') {
+        let container = document.getElementById('toastContainer');
+        if (!container) {
+          container = document.createElement('div');
+          container.id = 'toastContainer';
+          document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add('show'));
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+
+      // Logout modal controls
+      function openLogoutModal() {
+        document.getElementById('logoutModal').classList.remove('hidden');
+      }
+      function closeLogoutModal() {
+        document.getElementById('logoutModal').classList.add('hidden');
+      }
+      function confirmLogout() {
+        closeLogoutModal();
+        localStorage.removeItem('userLoggedIn');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userRole');
+        window.location.href = '/login';
+      }
+    </script>
+  </header>
+
+  <!-- LAYOUT -->
+  <div class="layout">
+    <aside class="side-panel">
+      <h2 class="panel-title">MENÚ PRINCIPAL</h2>
+      <nav class="panel-menu">
+        <a href="/resumen" class="panel-item" id="menuResumen">
+          <span class="panel-icon">📝</span>
+          <span>Resumen</span>
+        </a>
+        <a href="/monitoreo" class="panel-item" id="menuMonitoreo">
+          <span class="panel-icon">📈</span>
+          <span>Monitoreo</span>
+        </a>
+        <a href="/historial" class="panel-item" id="menuHistorial">
+          <span class="panel-icon">📄</span>
+          Historial
+        </a>
+        <a href="/usuarios" class="panel-item" id="menuUsuarios">
+          <span class="panel-icon">👥</span>
+          <span>Usuarios</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Aquí va el contenido real -->
+    <main class="workspace">
+      {% block content %}{% endblock %}
+    </main>
+
+  </div>
+
+  <!-- Toast container and Logout modal -->
+  <style>
+    #toastContainer { position: fixed; right: 20px; top: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
+    .toast { opacity: 0; transform: translateY(-10px); transition: .3s ease; padding: 12px 16px; border-radius: 10px; color: #1f2d1f; box-shadow: 0 6px 18px rgba(0,0,0,.12); background: #eef3ec; font-weight: 600; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: #d4edda; color: #155724; }
+    .toast.danger { background: #f8d7da; color: #721c24; }
+    .toast.warning { background: #fff3cd; color: #856404; }
+    .toast.info { background: #d1ecf1; color: #0c5460; }
+    #logoutModal { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,.45); backdrop-filter: blur(4px); z-index: 1500; }
+    #logoutModal.hidden { display:none; }
+    #logoutModal .card { background:#fff; width: 420px; padding: 22px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.18); }
+    #logoutModal .title { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+    #logoutModal .actions { display:flex; justify-content:flex-end; gap: 10px; margin-top: 16px; }
+    #logoutModal .btn { border:none; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer; }
+    #logoutModal .btn.cancel { background:#e5e5e5; color:#2f3b2f; }
+    #logoutModal .btn.ok { background: var(--primary); color: white; }
+  </style>
+
+  <div id="logoutModal" class="hidden">
+    <div class="card">
+      <div class="title">¿Cerrar sesión?</div>
+      <div style="color:#4a5a4a">Se cerrará tu sesión actual.</div>
+      <div class="actions">
+        <button class="btn cancel" onclick="closeLogoutModal()">Cancelar</button>
+        <button class="btn ok" onclick="confirmLogout()">Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Ocultar menús según rol
+    (function(){
+      const role = (localStorage.getItem('userRole') || '').toLowerCase();
+      if (role === 'intendencia' || role === 'usuario') {
+        document.getElementById('menuResumen').style.display = 'none';
+        document.getElementById('menuHistorial').style.display = 'none';
+        document.getElementById('menuUsuarios').style.display = 'none';
+      }
+    })();
+  </script>
+
+</body>
+</html>

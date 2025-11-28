@@ -1,0 +1,14 @@
+.cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 25px;
+}
+
+.card {
+  padding: 20px;
+  background: #e5e7eb;
+  border-radius: 8px;
+  min-width: 160px;
+  font-size: 18px;
+}

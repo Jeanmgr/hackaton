@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% block content %}
+<link rel="stylesheet" href="/static/css/usuarios.css">
+
+<div class="content-header">
+  <h1 class="content-title">Administración de Usuarios</h1>
+
+  <div class="controls">
+    <select id="roleFilter" class="filter-select">
+      <option value="all">Todos los Roles</option>
+      <option value="admin">Administradores</option>
+      <option value="intendencia">Intendencia</option>
+      <option value="usuario">Usuarios</option>
+    </select>
+
+    <button class="btn-primary" id="openAddUserBtn">
+      + Agregar Usuario
+    </button>
+  </div>
+</div>
+
+<div class="table-container">
+  <table class="users-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre Completo</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="usersTableBody">
+      <!-- Se llena desde usuarios.js -->
+    </tbody>
+  </table>
+</div>
+
+<!-- MODAL FORM -->
+<div id="userModal" class="modal hidden">
+  <div class="modal-content">
+    <h2 id="modalTitle" class="modal-title">Nuevo Usuario</h2>
+
+    <input id="modal_nombre" placeholder="Nombre" class="input-field">
+    <input id="modal_apellidos" placeholder="Apellidos" class="input-field">
+    <input id="modal_email" placeholder="Correo electrónico" class="input-field">
+    <input id="modal_password" type="password" placeholder="Contraseña" class="input-field">
+
+    <select id="modal_role" class="input-field">
+      <option value="admin">Administrador</option>
+      <option value="intendencia">Intendencia</option>
+      <option value="usuario">Usuario</option>
+    </select>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" id="cancelModal">Cancelar</button>
+      <button class="btn-primary" id="saveModal">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DELETE -->
+<div id="deleteModal" class="modal hidden">
+  <div class="modal-content">
+    <h2 class="modal-title">Confirmar Eliminación</h2>
+    <p id="deleteText">¿Seguro que deseas eliminar este usuario?</p>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" id="cancelDelete">Cancelar</button>
+      <button class="btn-danger" id="confirmDelete">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/usuarios.js"></script>
+{% endblock %}

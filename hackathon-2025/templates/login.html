@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoLoop - Login</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --primary: #7e917e;
+      --primary-dark: #6b776b;
+      --secondary: #9baa8e;
+      --accent: #cfe8cf;
+      --background: #fbf9f7;
+      --card-bg: #ffffff;
+      --sidebar-bg: #eef3ec;
+      --text-dark: #2f3b2f;
+      --text-medium: #4a5a4a;
+      --text-light: #6b776b;
+      --border: #d9e3d9;
+      --shadow: rgba(0, 0, 0, 0.08);
+      --hover: #f3f6f2;
+      --beige: #efe7d6;
+      --success: #7aa87a;
+      --warning: #e6c25c;
+      --danger: #d67a7a;
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--background);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .login-container {
+      display: flex;
+      width: 100%;
+      max-width: 1000px;
+      height: 600px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px var(--shadow);
+      overflow: hidden;
+    }
+
+    .login-form-section {
+      flex: 1;
+      padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: var(--sidebar-bg);
+    }
+
+    .logo-section {
+      flex: 1;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      color: white;
+      text-align: center;
+    }
+
+    .logo-circle {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: var(--beige);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .logo-text {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .company-name {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .company-slogan {
+      font-size: 1rem;
+      opacity: 0.9;
+      max-width: 300px;
+    }
+
+    .login-header {
+      margin-bottom: 2rem;
+    }
+
+    .login-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .login-subtitle {
+      color: var(--text-medium);
+      font-size: 0.95rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: var(--card-bg);
+      font-family: 'Inter', sans-serif;
+      color: var(--text-dark);
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(126, 145, 126, 0.1);
+    }
+
+    .password-container {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-light);
+      font-size: 1.2rem;
+    }
+
+    .remember-forgot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .remember-me input {
+      accent-color: var(--primary);
+    }
+
+    .forgot-password {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .forgot-password:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .btn-primary:disabled {
+      background-color: var(--text-light);
+      cursor: not-allowed;
+    }
+
+    .register-link {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: var(--text-medium);
+      font-size: 0.9rem;
+    }
+
+    .register-link a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      background-color: #ffe6e6;
+      color: var(--danger);
+      padding: 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      display: none;
+      font-size: 0.9rem;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .login-container {
+        flex-direction: column;
+        height: auto;
+      }
+      
+      .logo-section {
+        order: -1;
+        padding: 2rem 1rem;
+      }
+      
+      .login-form-section {
+        padding: 2rem 1.5rem;
+      }
+      
+      .logo-circle {
+        width: 120px;
+        height: 120px;
+      }
+      
+      .logo-text {
+        font-size: 1.8rem;
+      }
+      
+      .company-name {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-form-section">
+      <div class="login-header">
+        <h1 class="login-title">Iniciar Sesión</h1>
+        <p class="login-subtitle">Ingresa a tu cuenta para acceder al dashboard</p>
+      </div>
+
+      <div id="errorMessage" class="error-message"></div>
+      
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email" class="form-label">Correo Electrónico</label>
+          <input type="email" id="email" class="form-input" placeholder="tu@correo.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password" class="form-label">Contraseña</label>
+          <div class="password-container">
+            <input type="password" id="password" class="form-input" placeholder="••••••••" required>
+            <button type="button" class="toggle-password" id="togglePassword">👁️</button>
+          </div>
+        </div>
+        
+        <div class="remember-forgot">
+          <div class="remember-me">
+            <input type="checkbox" id="remember">
+            <label for="remember">Recordarme</label>
+          </div>
+          <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" id="loginBtn">Iniciar Sesión</button>
+      </form>
+      
+      <div class="register-link">
+        ¿No tienes una cuenta? <a href="/usuarios">Contacta al administrador</a>
+      </div>
+    </div>
+    
+    <div class="logo-section">
+      <div class="logo-circle">
+        <div class="logo-text">🌿</div>
+      </div>
+      <h2 class="company-name">EcoLoop</h2>
+      <p class="company-slogan">Sistema de gestión de residuos inteligente</p>
+    </div>
+  </div>
+
+  <script>
+    // Toggle password visibility
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    
+    togglePassword.addEventListener('click', function() {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      this.textContent = type === 'password' ? '👁️' : '🔒';
+    });
+    
+    // Mostrar mensaje de error
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      errorDiv.textContent = message;
+      errorDiv.classList.add('show');
+      setTimeout(() => {
+        errorDiv.classList.remove('show');
+      }, 5000);
+    }
+
+    // Form submission
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    
+    loginForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      
+      // Validación básica
+      if (!email || !password) {
+        showError('Por favor, completa todos los campos');
+        return;
+      }
+      
+      // Deshabilitar botón durante el proceso
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Verificando...';
+      
+      try {
+        // Obtener todos los usuarios de Firebase
+        const response = await fetch('/api/usuarios/');
+        
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        
+        const usuarios = await response.json();
+        console.log('Datos recibidos del servidor:', usuarios);
+        
+        // Buscar usuario con el correo proporcionado
+        let usuarioEncontrado = null;
+        let userId = null;
+        
+        if (usuarios) {
+          // Manejar tanto arrays como objetos
+          if (Array.isArray(usuarios)) {
+            // Si es array, buscar por índice
+            for (let i = 0; i < usuarios.length; i++) {
+              const userData = usuarios[i];
+              if (userData && userData.Correo && userData.Correo.toLowerCase() === email.toLowerCase()) {
+                usuarioEncontrado = userData;
+                userId = i.toString();
+                break;
+              }
+            }
+          } else if (typeof usuarios === 'object') {
+            // Si es objeto, iterar por las claves
+            for (const [id, userData] of Object.entries(usuarios)) {
+              if (userData && userData !== null && typeof userData === 'object' && userData.Correo) {
+                if (userData.Correo.toLowerCase() === email.toLowerCase()) {
+                  usuarioEncontrado = userData;
+                  userId = id;
+                  break;
+                }
+              }
+            }
+          }
+        }
+        
+        console.log('Usuario encontrado:', usuarioEncontrado);
+        
+        // Verificar si el usuario existe y la contraseña es correcta
+        if (usuarioEncontrado && usuarioEncontrado.Contraseña === password) {
+          // Guardar sesión en localStorage
+          localStorage.setItem('userLoggedIn', 'true');
+          localStorage.setItem('userId', userId);
+          localStorage.setItem('userName', `${usuarioEncontrado.Nombre} ${usuarioEncontrado.Apellidos}`);
+          // Normalizar rol y permitir 'Admin', 'Intendencia' o 'Usuario'
+          const rolRaw = (usuarioEncontrado.Rol || '').toLowerCase();
+          let rolNorm = null;
+          if (rolRaw === 'admin') rolNorm = 'admin';
+          else if (rolRaw === 'intendencia') rolNorm = 'intendencia';
+          else if (rolRaw === 'usuario') rolNorm = 'usuario';
+          
+          if (!rolNorm) {
+            showError('Tu rol no tiene acceso. Contacta al administrador.');
+            loginBtn.disabled = false;
+            loginBtn.textContent = 'Iniciar Sesión';
+            return;
+          }
+          localStorage.setItem('userRole', rolNorm);
+          
+          // Redirigir según rol
+          if (rolNorm === 'intendencia') {
+            window.location.href = '/monitoreo';
+          } else if (rolNorm === 'usuario') {
+            window.location.href = '/monitoreo';
+          } else {
+            window.location.href = '/resumen';
+          }
+        } else {
+          showError('Correo o contraseña incorrectos');
+          loginBtn.disabled = false;
+          loginBtn.textContent = 'Iniciar Sesión';
+        }
+      } catch (error) {
+        console.error('Error completo:', error);
+        showError(`Error: ${error.message}`);
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Iniciar Sesión';
+      }
+    });
+
+    // Verificar si ya hay sesión activa
+    if (localStorage.getItem('userLoggedIn') === 'true') {
+      const role = (localStorage.getItem('userRole') || '').toLowerCase();
+      window.location.href = role === 'intendencia' ? '/monitoreo' : '/resumen';
+    }
+  </script>
+</body>
+</html>

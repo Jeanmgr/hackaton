@@ -1,0 +1,27 @@
+body {
+  margin: 0;
+  display: flex;
+  font-family: Arial, sans-serif;
+}
+
+.layout {
+  display: flex;
+  width: 100%;
+}
+
+.sidebar {
+  width: 220px;
+  background: #111827;
+  color: white;
+  height: 100vh;
+  padding: 20px;
+}
+
+.sidebar ul { padding: 0; list-style: none; }
+.sidebar li { margin-bottom: 15px; }
+.sidebar a { color: #fff; text-decoration: none; }
+
+.content {
+  padding: 30px;
+  width: 100%;
+}

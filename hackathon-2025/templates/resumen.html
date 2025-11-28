@@ -1,0 +1,182 @@
+{% extends "layout.html" %}
+{% block content %}
+<link rel="stylesheet" href="/static/css/resumen.css">
+
+<div class="content-header">
+  <h1 class="content-title">Resumen General del Sistema</h1>
+  <button class="btn-primary" onclick="generarReporteSemanal()">📊 Generar Reporte Semanal</button>
+</div>
+
+<div class="stats-container">
+  <div class="stat-card">
+    <h3>Total de Contenedores</h3>
+    <p class="stat-value" id="totalSensores">-</p>
+  </div>
+
+  <div class="stat-card">
+    <h3>Contenedores Llenos</h3>
+    <p class="stat-value alert" id="contenedoresLlenos">-</p>
+  </div>
+
+  <div class="stat-card">
+    <h3>Alertas de Toxicidad</h3>
+    <p class="stat-value alert" id="alertasToxicidad">-</p>
+  </div>
+
+  <div class="stat-card">
+    <h3>Usuarios Registrados</h3>
+    <p class="stat-value green" id="totalUsuarios">-</p>
+  </div>
+</div>
+
+<div class="chart-container">
+  <h2>Estado de Sensores en Tiempo Real</h2>
+  <div id="sensoresStatus" style="max-height: 400px; overflow-y: auto;">
+    <p style="text-align: center; color: #888;">Cargando datos...</p>
+  </div>
+</div>
+
+<div class="summary-box">
+  <h2>Reporte de la Semana Actual</h2>
+  <p id="resumenSemanal">
+    Cargando datos del sistema...
+  </p>
+  <div style="margin-top: 15px;">
+    <strong>Semana:</strong> <span id="semanaActual">-</span><br>
+    <strong>Período:</strong> <span id="periodoSemana">-</span>
+  </div>
+</div>
+
+<div class="actions">
+  <button class="btn-primary" onclick="window.location.href='/historial'">📋 Ver Historial Completo</button>
+  <button class="btn-primary" onclick="descargarReportePDF()">📄 Descargar PDF</button>
+</div>
+
+<script>
+  let datosActuales = {};
+
+  async function cargarDatos() {
+    try {
+      // Cargar sensores
+      const sensoresRes = await fetch('/api/sensores/');
+      const sensores = await sensoresRes.json();
+      
+      // Cargar usuarios
+      const usuariosRes = await fetch('/api/usuarios/');
+      const usuarios = await usuariosRes.json();
+      
+      // Calcular estadísticas
+      let totalSensores = 0;
+      let contenedoresLlenos = 0;
+      let alertasToxicidad = 0;
+      
+      if (sensores && typeof sensores === 'object') {
+        totalSensores = Object.keys(sensores).length;
+        
+        for (const [id, sensor] of Object.entries(sensores)) {
+          if (sensor.estado_contenedor === 'LLENO') {
+            contenedoresLlenos++;
+          }
+          if (sensor.toxicidad && sensor.toxicidad.toLowerCase() === 'alto') {
+            alertasToxicidad++;
+          }
+        }
+      }
+      
+      let totalUsuarios = 0;
+      if (usuarios && typeof usuarios === 'object') {
+        totalUsuarios = Object.keys(usuarios).filter(k => usuarios[k] !== null).length;
+      }
+      
+      // Actualizar UI
+      document.getElementById('totalSensores').textContent = totalSensores;
+      document.getElementById('contenedoresLlenos').textContent = contenedoresLlenos;
+      document.getElementById('alertasToxicidad').textContent = alertasToxicidad;
+      document.getElementById('totalUsuarios').textContent = totalUsuarios;
+      
+      // Mostrar sensores
+      mostrarSensores(sensores);
+      
+      // Guardar datos para reporte
+      datosActuales = { sensores, usuarios, stats: { totalSensores, contenedoresLlenos, alertasToxicidad, totalUsuarios } };
+      
+      // Cargar reporte semanal
+      await cargarReporteSemanal();
+      
+    } catch (error) {
+      console.error('Error al cargar datos:', error);
+    }
+  }
+  
+  function mostrarSensores(sensores) {
+    const container = document.getElementById('sensoresStatus');
+    let html = '<div style="display: grid; gap: 10px;">';
+    
+    if (sensores && typeof sensores === 'object') {
+      for (const [id, sensor] of Object.entries(sensores)) {
+        const estadoColor = sensor.estado_contenedor === 'LLENO' ? '#e74c3c' : '#27ae60';
+        const toxColor = sensor.toxicidad === 'Alto' ? '#e74c3c' : '#f39c12';
+        
+        html += `
+          <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid ${estadoColor};">
+            <strong style="font-size: 16px;">${id}</strong>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; font-size: 14px;">
+              <div>Estado: <span style="color: ${estadoColor}; font-weight: bold;">${sensor.estado_contenedor}</span></div>
+              <div>Toxicidad: <span style="color: ${toxColor}; font-weight: bold;">${sensor.toxicidad}</span></div>
+              <div>Distancia: ${sensor.distancia_cm} cm</div>
+              <div>Luminosidad: ${sensor.luminosidad}</div>
+            </div>
+          </div>
+        `;
+      }
+    } else {
+      html += '<p style="text-align: center; color: #888;">No hay sensores disponibles</p>';
+    }
+    
+    html += '</div>';
+    container.innerHTML = html;
+  }
+  
+  async function cargarReporteSemanal() {
+    try {
+      const response = await fetch('/api/reportes/generar/actual');
+      const reporte = await response.json();
+      
+      if (reporte && !reporte.error) {
+        document.getElementById('semanaActual').textContent = reporte.semana;
+        document.getElementById('periodoSemana').textContent = `${reporte.fecha_inicio} al ${reporte.fecha_fin}`;
+        document.getElementById('resumenSemanal').textContent = reporte.resumen;
+      }
+    } catch (error) {
+      console.error('Error al cargar reporte semanal:', error);
+    }
+  }
+  
+  async function generarReporteSemanal() {
+    if (confirm('¿Deseas guardar el reporte de esta semana en el historial?')) {
+      try {
+        const response = await fetch('/api/reportes/generar/actual');
+        const reporte = await response.json();
+        
+        if (reporte && !reporte.error) {
+          alert('✅ Reporte semanal guardado correctamente');
+          await cargarReporteSemanal();
+        }
+      } catch (error) {
+        alert('❌ Error al generar reporte: ' + error.message);
+      }
+    }
+  }
+  
+  function descargarReportePDF() {
+    alert('Función de descarga PDF en desarrollo. Por ahora puedes usar Ctrl+P para imprimir esta página.');
+  }
+  
+  // Cargar datos al iniciar
+  cargarDatos();
+  
+  // Actualizar cada 30 segundos
+  setInterval(cargarDatos, 30000);
+</script>
+
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="monitor-container">
+  <div id="map"></div>
+
+  <aside class="alerts-panel">
+    <h2>Alertas del Sistema</h2>
+    <div class="alert-card"><strong>📦 Bote Lleno</strong><p>3 contenedores requieren atención</p></div>
+    <div class="alert-card"><strong>🚨 Sensor Desconectado</strong><p>1 sensor fuera de línea</p></div>
+    <div class="alert-card"><strong>♻ Material Reciclado Hoy</strong><p>12.4 kg</p></div>
+
+    <button id="resetMap" class="btn-primary reset-btn">🔄 Restablecer Vista</button>
+  </aside>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="/static/js/map-monitoreo.js"></script>
+
+{% endblock %}

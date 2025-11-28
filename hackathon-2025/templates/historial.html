@@ -1,0 +1,250 @@
+{% extends "layout.html" %}
+{% block content %}
+<link rel="stylesheet" href="/static/css/historial.css">
+
+<div class="content-header">
+  <h1 class="content-title">Historial de Reportes Semanales</h1>
+
+  <button class="btn-primary" onclick="agregarRegistroManual()">
+    ➕ Agregar Registro
+  </button>
+  <button class="btn-primary" id="downloadPDF">
+    📄 Descargar PDF
+  </button>
+</div>
+
+<div class="table-container">
+  <table class="users-table">
+    <thead>
+      <tr>
+        <th>Semana</th>
+        <th>Período</th>
+        <th>Total Sensores</th>
+        <th>Contenedores Llenos</th>
+        <th>Alertas Toxicidad</th>
+        <th>Recolecciones</th>
+        <th>Peso Total (kg)</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="reportesTableBody">
+      <tr>
+        <td colspan="8" style="text-align: center; padding: 20px; color: #888;">
+          Cargando historial de reportes...
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div style="margin-top: 30px;">
+  <h2>Registros de Recolección Detallados</h2>
+  <p style="color:#666;margin:8px 0">Selecciona un reporte semanal para ver el análisis detallado.</p>
+  <div class="table-container">
+    <table class="users-table" id="detalleTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fecha/Hora</th>
+          <th>Sensor/Zona</th>
+          <th>Tipo Residuo</th>
+          <th>Peso (kg)</th>
+          <th>Nivel Llenado</th>
+          <th>Toxicidad</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody id="historialTableBody">
+        <tr><td colspan="8" style="text-align:center;padding:20px;color:#888;">Selecciona una semana para ver detalles</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  async function cargarReportes() {
+    try {
+      const response = await fetch('/api/reportes/');
+      const reportes = await response.json();
+      
+      const tbody = document.getElementById('reportesTableBody');
+      
+      if (reportes && typeof reportes === 'object' && Object.keys(reportes).length > 0) {
+        let html = '';
+        
+        // Ordenar por semana (más reciente primero)
+        const reportesArray = Object.entries(reportes).sort((a, b) => b[0].localeCompare(a[0]));
+        
+        reportesArray.forEach(([semana, reporte]) => {
+          html += `
+            <tr>
+              <td><strong>${reporte.semana || semana}</strong></td>
+              <td>${reporte.fecha_inicio} al ${reporte.fecha_fin}</td>
+              <td>${reporte.total_sensores}</td>
+              <td><span class="badge ${reporte.contenedores_llenos > 0 ? 'warning' : 'success'}">${reporte.contenedores_llenos}</span></td>
+              <td><span class="badge ${reporte.alertas_toxicidad > 0 ? 'danger' : 'success'}">${reporte.alertas_toxicidad}</span></td>
+              <td>${reporte.total_recolecciones}</td>
+              <td>${reporte.peso_total_kg} kg</td>
+              <td>
+                <button onclick="verDetalleReporte('${semana}')" class="btn-small">👁️ Ver</button>
+              </td>
+            </tr>
+          `;
+        });
+        
+        tbody.innerHTML = html;
+      } else {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" style="text-align: center; padding: 20px; color: #888;">
+              No hay reportes semanales aún. Genera uno desde la página de Resumen.
+            </td>
+          </tr>
+        `;
+      }
+    } catch (error) {
+      console.error('Error al cargar reportes:', error);
+      document.getElementById('reportesTableBody').innerHTML = `
+        <tr>
+          <td colspan="8" style="text-align: center; padding: 20px; color: red;">
+            Error al cargar reportes: ${error.message}
+          </td>
+        </tr>
+      `;
+    }
+  }
+  
+  let semanaSeleccionada = null;
+
+  async function cargarHistorial() {
+    try {
+      const response = await fetch('/api/historial/');
+      const historial = await response.json();
+      
+      const tbody = document.getElementById('historialTableBody');
+      const detalleTable = document.getElementById('detalleTable');
+
+      if (!semanaSeleccionada) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:20px;color:#888;">Selecciona una semana para ver detalles</td></tr>`;
+        return;
+      }
+
+      if (historial && typeof historial === 'object' && Object.keys(historial).length > 0) {
+        let html = '';
+        
+        // Ordenar por ID (más reciente primero)
+        const registrosArray = Object.entries(historial).sort((a, b) => b[0].localeCompare(a[0]));
+        
+        // Filtrar por período aproximado si el registro cae dentro de la semana seleccionada
+        registrosArray.forEach(([id, registro]) => {
+          const estadoColor = registro.estado === 'Completado' ? 'success' : 'warning';
+          const toxColor = registro.toxicidad === 'Alto' ? 'danger' : 'success';
+          
+          html += `
+            <tr>
+              <td><code>${id}</code></td>
+              <td>${registro.fecha} ${registro.hora}</td>
+              <td>${registro.zona}<br><small style="color: #888;">${registro.sensor_id}</small></td>
+              <td><span class="badge info">${registro.tipo_residuo}</span></td>
+              <td>${registro.peso_kg}</td>
+              <td>${registro.nivel_llenado}%</td>
+              <td><span class="badge ${toxColor}">${registro.toxicidad}</span></td>
+              <td><span class="badge ${estadoColor}">${registro.estado}</span></td>
+            </tr>
+          `;
+        });
+        tbody.innerHTML = html;
+      } else {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:20px;color:#888;">No hay registros de recolección para mostrar</td></tr>`;
+      }
+    } catch (error) {
+      console.error('Error al cargar historial:', error);
+    }
+  }
+  
+  function verDetalleReporte(semana) {
+    semanaSeleccionada = semana;
+    showToast('Mostrando detalles de ' + semana, 'info');
+    cargarHistorial();
+  }
+  
+  function agregarRegistroManual() {
+    const fecha = prompt('Fecha (YYYY-MM-DD):', new Date().toISOString().split('T')[0]);
+    if (!fecha) return;
+    
+    const hora = prompt('Hora (HH:MM):', new Date().toLocaleTimeString('es-MX', {hour: '2-digit', minute: '2-digit'}));
+    if (!hora) return;
+    
+    const sensor_id = prompt('ID del Sensor:', 'sensor_01');
+    const zona = prompt('Zona:', 'Campus UTTT');
+    const tipo_residuo = prompt('Tipo de Residuo:', 'PET/Plástico');
+    const peso_kg = parseFloat(prompt('Peso (kg):', '0'));
+    
+    const registro = {
+      fecha,
+      hora,
+      sensor_id,
+      zona,
+      tipo_residuo,
+      peso_kg,
+      estado: 'Completado',
+      nivel_llenado: 100,
+      toxicidad: 'Normal'
+    };
+    
+    fetch('/api/historial/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(registro)
+    })
+    .then(res => res.json())
+    .then(data => {
+      showToast('Registro agregado correctamente', 'success');
+      cargarHistorial();
+    })
+    .catch(error => {
+      showToast('Error: ' + error.message, 'danger');
+    });
+  }
+  
+  document.getElementById("downloadPDF").addEventListener("click", () => {
+    showToast('Descarga de PDF en desarrollo. Usa Ctrl+P para imprimir.', 'info');
+  });
+  
+  // Cargar datos al iniciar
+  cargarReportes();
+  cargarHistorial();
+  
+  // Actualizar cada minuto
+  setInterval(() => {
+    cargarReportes();
+    cargarHistorial();
+  }, 60000);
+</script>
+
+<style>
+  .badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .badge.success { background: #d4edda; color: #155724; }
+  .badge.warning { background: #fff3cd; color: #856404; }
+  .badge.danger { background: #f8d7da; color: #721c24; }
+  .badge.info { background: #d1ecf1; color: #0c5460; }
+  .btn-small {
+    padding: 4px 8px;
+    font-size: 12px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .btn-small:hover {
+    background: #0056b3;
+  }
+</style>
+
+{% endblock %}

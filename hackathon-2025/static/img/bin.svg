@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128"
+     xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo transparente -->
+  <rect width="128" height="128" fill="none"/>
+
+  <!-- Cuerpo del bote -->
+  <rect x="32" y="40" width="64" height="70" rx="10" ry="10"
+        fill="#4caf50" stroke="#1b5e20" stroke-width="4"/>
+
+  <!-- Tapa -->
+  <rect x="28" y="30" width="72" height="14" rx="6" ry="6"
+        fill="#388e3c" stroke="#1b5e20" stroke-width="3"/>
+
+  <!-- Asa -->
+  <rect x="48" y="18" width="32" height="8" rx="4"
+        fill="#2e7d32"/>
+
+  <!-- Líneas verticales -->
+  <rect x="42" y="46" width="6" height="58" fill="#e8f5e9" opacity="0.9"/>
+  <rect x="61" y="46" width="6" height="58" fill="#e8f5e9" opacity="0.9"/>
+  <rect x="80" y="46" width="6" height="58" fill="#e8f5e9" opacity="0.9"/>
+</svg>

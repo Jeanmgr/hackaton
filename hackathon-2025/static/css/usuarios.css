@@ -1,0 +1,208 @@
+/* ==== TABLA USUARIOS & CONTROLES ==== */
+.content-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:1rem;
+}
+
+.controls {
+  display:flex;
+  align-items:center;
+  gap:1rem;
+}
+
+/* SELECT FILTRO */
+.filter-select {
+  padding:.75rem 1.2rem;
+  border-radius:12px;
+  border:2px solid var(--border);
+  background:var(--card-bg);
+  color:var(--text-dark);
+  font-size:.95rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:.25s;
+  box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+.filter-select:hover {
+  border-color:var(--primary);
+  transform:scale(1.03);
+}
+
+/* TABLA */
+.table-container {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px var(--shadow);
+  border: 1px solid var(--border);
+  margin-top: 1rem;
+  overflow: auto; /* scroll horizontal y vertical */
+  max-height: 60vh; /* evitar que se encoja el layout */
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px; /* mantener columnas legibles */
+}
+
+.users-table th {
+  padding: 1rem;
+  background: var(--sidebar-bg);
+  text-transform: uppercase;
+  letter-spacing:.5px;
+  color:var(--text-medium);
+  font-size:.8rem;
+  border-bottom:1px solid var(--border);
+}
+
+.users-table td {
+  padding: 1rem;
+  border-bottom:1px solid var(--border);
+}
+
+.users-table tr:hover {
+  background:var(--hover);
+}
+
+/* ROLES */
+.role-badge {
+  padding:.45rem .9rem;
+  border-radius:12px;
+  color:white;
+  font-weight:600;
+  font-size:.8rem;
+  text-transform: capitalize;
+}
+.role-badge.admin { background:#e74c3c; }
+.role-badge.intendencia { background:#2e86de; }
+.role-badge.usuario { background:#27ae60; }
+.role-badge.otro { background:#95a5a6; }
+
+/* ACCIONES */
+.actions-wrapper {
+  display:flex;
+  gap:.7rem;
+}
+
+.action-btn {
+  padding:.75rem 1.3rem;
+  font-size:.95rem;
+  font-weight:700;
+  border:none;
+  border-radius:14px;
+  cursor:pointer;
+  transition:.25s;
+  box-shadow:0 4px 10px rgba(0,0,0,.15);
+}
+
+/* Editar */
+.btn-edit {
+  background:#82b29a;
+  color:white;
+}
+.btn-edit:hover {
+  background:#6b9f88;
+  transform:translateY(-2px) scale(1.07);
+}
+
+/* Eliminar */
+.btn-delete {
+  background:#d9534f;
+  color:white;
+}
+.btn-delete:hover {
+  background:#c0392b;
+  transform:translateY(-2px) scale(1.07);
+}
+
+/* ==== MODALES ==== */
+.modal {
+  position:fixed;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:rgba(0,0,0,.45);
+  backdrop-filter:blur(4px);
+  z-index:999;
+}
+.modal.hidden { display:none; }
+
+.modal-content {
+  background:var(--card-bg);
+  padding:2.2rem;
+  border-radius:22px;
+  width:520px;
+  display:flex;
+  flex-direction:column;
+  gap:1.1rem;
+  box-shadow:0 8px 32px rgba(0,0,0,.18);
+  animation:popIn .25s ease;
+}
+
+@keyframes popIn {
+  from{opacity:0; transform:scale(.88);}
+  to{opacity:1; transform:scale(1);}
+}
+
+.modal-title {
+  font-size:1.6rem;
+  font-weight:700;
+  text-align:center;
+}
+
+.input-field {
+  padding:.9rem;
+  border-radius:12px;
+  border:1px solid var(--border);
+  font-size:1rem;
+}
+.input-field:focus {
+  outline:2px solid var(--primary);
+}
+
+/* BOTONES MODAL */
+.modal-actions {
+  display:flex;
+  justify-content:flex-end;
+  gap:1rem;
+  margin-top:.4rem;
+}
+
+.btn-primary {
+  background:var(--primary);
+  color:white;
+  padding:.85rem 1.6rem;
+  border-radius:14px;
+  font-size:1rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:.25s;
+}
+.btn-primary:hover { background:var(--primary-dark); transform:scale(1.07); }
+
+.btn-secondary {
+  background:#e5e5e5;
+  color:var(--text-dark);
+  padding:.85rem 1.6rem;
+  border-radius:14px;
+  font-size:1rem;
+  font-weight:700;
+  cursor:pointer;
+}
+.btn-secondary:hover { background:#cfcfcf; }
+
+.btn-danger {
+  background:#d9534f;
+  color:white;
+  padding:.85rem 1.6rem;
+  border-radius:14px;
+  font-size:1rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:.25s;
+}
+.btn-danger:hover { background:#c0392b; transform:scale(1.07); }
